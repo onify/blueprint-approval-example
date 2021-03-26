@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" id="Definitions_1kf31ww" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.5.0">
-  <bpmn:process id="approval-example" name="Onify Blueprint: Approval example
-&#10;&#10;" isExecutable="true">
+  <bpmn:process id="approval-example" name="Onify Blueprint: Approval example&#10;" isExecutable="true">
     <bpmn:exclusiveGateway id="approveGateway" name="Approved?" default="Flow_0nms745">
       <bpmn:incoming>Flow_0g8o9ul</bpmn:incoming>
       <bpmn:outgoing>Flow_1bjh9j0</bpmn:outgoing>
@@ -9,8 +8,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0g8o9ul" sourceRef="approval" targetRef="approveGateway" />
     <bpmn:sequenceFlow id="Flow_1bjh9j0" name="Yes" sourceRef="approveGateway" targetRef="emailApproved">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">console.log(environment.output._approval);
-next(null, (environment.output._approval.form.queryparam.action == "approve"));</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">next(null, (environment.output._approval.form.queryparam.action == "approve"));</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="Event_183t8f1" name="Done">
       <bpmn:incoming>Flow_1c8fgoj</bpmn:incoming>
@@ -353,12 +351,6 @@ next();</bpmn:script>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="approval-example">
-      <bpmndi:BPMNShape id="TextAnnotation_0aksq67_di" bpmnElement="TextAnnotation_0aksq67">
-        <dc:Bounds x="1460" y="80" width="100" height="40" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1ujfxmr_di" bpmnElement="TextAnnotation_1ujfxmr">
-        <dc:Bounds x="1690" y="80" width="130" height="40" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1c8fgoj_di" bpmnElement="Flow_1c8fgoj" bioc:stroke="rgb(67, 160, 71)" bioc:fill="rgb(200, 230, 201)">
         <di:waypoint x="1690" y="207" />
         <di:waypoint x="1762" y="207" />
@@ -508,14 +500,12 @@ next();</bpmn:script>
       <bpmndi:BPMNShape id="TextAnnotation_1d9hgak_di" bpmnElement="TextAnnotation_1d9hgak">
         <dc:Bounds x="520" y="80" width="100" height="40" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_10kr31d_di" bpmnElement="Association_10kr31d">
-        <di:waypoint x="1444" y="167" />
-        <di:waypoint x="1487" y="120" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0v51i0q_di" bpmnElement="Association_0v51i0q">
-        <di:waypoint x="1676" y="167" />
-        <di:waypoint x="1718" y="120" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0aksq67_di" bpmnElement="TextAnnotation_0aksq67">
+        <dc:Bounds x="1460" y="80" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ujfxmr_di" bpmnElement="TextAnnotation_1ujfxmr">
+        <dc:Bounds x="1690" y="80" width="130" height="40" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0sf4oy2_di" bpmnElement="reminderEvent">
         <dc:Bounds x="892" y="229" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -539,6 +529,14 @@ next();</bpmn:script>
       <bpmndi:BPMNEdge id="Association_0qd3gu9_di" bpmnElement="Association_0qd3gu9">
         <di:waypoint x="506" y="167" />
         <di:waypoint x="548" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_10kr31d_di" bpmnElement="Association_10kr31d">
+        <di:waypoint x="1444" y="167" />
+        <di:waypoint x="1487" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0v51i0q_di" bpmnElement="Association_0v51i0q">
+        <di:waypoint x="1676" y="167" />
+        <di:waypoint x="1718" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
