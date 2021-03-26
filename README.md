@@ -48,6 +48,7 @@ Result form
 
 1. Resources
 2. Import configuration
+3. Modify Flow (BPMN)
 
 ### Resources
 
@@ -73,7 +74,7 @@ Import `approval-example` workflow configuration:
 curl -X POST "<ONIFY-HUB-API-URL>/api/v2/setup/database/config/import" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@workflow.json
 ```
 
-### Modify BPMN file
+### Modify Flow (BPMN)
 
 Open `approval-example.bpmn` in editor change the following.
 
