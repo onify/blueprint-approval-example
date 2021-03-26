@@ -59,19 +59,19 @@ Copy `./resources/*` to Onify Hub resources folder
 Import `request` form configuration:
 
 ```bash
-curl -X POST "<ONIFY-HUB-API-URL>/api/v2/setup/database/config/import" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@form_request.json
+curl -X POST "<ONIFY-HUB-API-URL>/api/v2/admin/forms" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@form_request.json
 ```
 
 Import `approval` form configuration:
 
 ```bash
-curl -X POST "<ONIFY-HUB-API-URL>/api/v2/setup/database/config/import" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@form_approval.json
+curl -X POST "<ONIFY-HUB-API-URL>/api/v2/admin/forms" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@form_approval.json
 ```
 
 Import `approval-example` workflow configuration:
 
 ```bash
-curl -X POST "<ONIFY-HUB-API-URL>/api/v2/setup/database/config/import" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@workflow.json
+curl -X POST "<ONIFY-HUB-API-URL>/api/v2/admin/workflows" -H "accept: application/json" -H "authorization: <ONIFY-HUB-API-TOKEN>" -H "Content-Type: application/json" -d "@workflow.json
 ```
 
 ### Modify Flow (BPMN)
