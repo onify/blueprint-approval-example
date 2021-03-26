@@ -1,0 +1,15 @@
+{
+  "slug": "approval",
+  "title": "approval",
+  "name": "approval",
+  "template": {
+    "form": "approval",
+    "result": "approval-result"
+  },
+  "test": false,
+  "noninteractive": false,
+  "tag": [
+    "blueprint",
+    "approval-example"
+  ]
+}

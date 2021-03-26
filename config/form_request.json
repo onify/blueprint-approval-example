@@ -1,0 +1,20 @@
+{
+  "slug": "request",
+  "title": "request",
+  "name": "request",
+  "template": {
+    "form": "request",
+    "result": "request-result"
+  },
+  "test": false,
+  "process": {
+    "workflow": "approval-example",
+    "title": "Approval example",
+    "description": "Requested by {{user.key}}"
+  },
+  "noninteractive": false,
+  "tag": [
+    "blueprint",
+    "approval-example"
+  ]
+}

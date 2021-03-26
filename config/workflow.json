@@ -1,0 +1,11 @@
+{
+  "state": [],
+  "key": "approval-example",
+  "name": "Onify Blueprint: Approval example",
+  "bpmnresource": "/flows/approval-example.bpmn",
+  "tag": [
+    "flow",
+    "blueprint",
+    "approval-example"
+  ]
+}

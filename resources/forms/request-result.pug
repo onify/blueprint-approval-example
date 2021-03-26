@@ -1,0 +1,22 @@
+extends ../views/form/default-confirmation-form
+
+block formContent
+
+	+formElement({
+		type: "processState"
+	})
+
+	+formElement({
+		type: "simpleText",
+		label: "What are you requesting?",
+		value: submit.what,
+		readonly: true
+	})
+
+	+formElement({
+		type: "simpleText",
+		label: "Why are you requesting it?",
+		value: submit.why,
+		readonly: true
+	})
+

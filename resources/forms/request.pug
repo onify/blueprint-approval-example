@@ -1,0 +1,16 @@
+extends ../views/form/default-form
+
+block formContent	
+
+	+formElement({
+		name: "what",
+		label: "What are you requesting?",
+		required: true
+	})
+
+	+formElement({
+		type: "textarea",
+		name: "why",
+		label: "Why are you requesting it?",
+		required: true
+	})

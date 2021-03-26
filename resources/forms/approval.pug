@@ -1,0 +1,14 @@
+extends ../views/form/default-form
+
+block append formConfig
+	-var submitButtonText = (form.queryparam.action === "approve" ? "Approve" : "Deny")
+	-var processOutput = helper.apiRequest({url: '/my/processes/' + form.queryparam.processid + '/output'})
+	+formOptions({
+		submitButtonName: submitButtonText
+	})
+
+block formContent
+
+	p What: #{processOutput.output.what}
+	p Why: #{processOutput.output.why}
+

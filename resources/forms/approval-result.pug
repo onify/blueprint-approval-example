@@ -1,0 +1,18 @@
+extends ../views/form/default-confirmation-form
+
+block append formConfig
+	+formOptions({
+	})
+
+block formContent
+
+	+formElement({
+		type: "processState"
+	})
+
+	+formElement({
+		type: "processOutput",
+		outputVariable: "resultHTML",
+		format: "html",
+		loadingText: "Please wait..."
+	})
