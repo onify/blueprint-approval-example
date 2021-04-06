@@ -6,14 +6,9 @@
       <bpmn:outgoing>Flow_1bjh9j0</bpmn:outgoing>
       <bpmn:outgoing>Flow_0nms745</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0g8o9ul" sourceRef="approval" targetRef="approveGateway" />
-    <bpmn:sequenceFlow id="Flow_1bjh9j0" name="Yes" sourceRef="approveGateway" targetRef="emailApproved">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">next(null, (environment.output._approval.form.queryparam.action == "approve"));</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:endEvent id="Event_183t8f1" name="Done">
+    <bpmn:endEvent id="EndEventSuccess" name="Success">
       <bpmn:incoming>Flow_1c8fgoj</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0nms745" name="No" sourceRef="approveGateway" targetRef="emailNotApproved" />
     <bpmn:serviceTask id="sendMailToManager" name="Send mail to manager">
       <bpmn:documentation />
       <bpmn:extensionElements>
@@ -81,7 +76,6 @@ next(null, payload);</camunda:script>
       <bpmn:incoming>Flow_0hakt3x</bpmn:incoming>
       <bpmn:outgoing>Flow_1fx5hzv</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1fx5hzv" sourceRef="sendMailToManager" targetRef="approval" />
     <bpmn:serviceTask id="emailApproved" name="Send mail - Approved">
       <bpmn:extensionElements>
         <camunda:connector>
@@ -116,7 +110,6 @@ next(null, payload);</camunda:script>
       <bpmn:incoming>Flow_1bjh9j0</bpmn:incoming>
       <bpmn:outgoing>Flow_1ybc2i8</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1ybc2i8" sourceRef="emailApproved" targetRef="doSomeMagic" />
     <bpmn:serviceTask id="emailNotApproved" name="Send mail - Not approved">
       <bpmn:extensionElements>
         <camunda:connector>
@@ -138,14 +131,6 @@ next(null, payload);</camunda:script>
             <camunda:script scriptFormat="js">environment.output.output.resultHTML = `This request is not approved!`;
 next();</camunda:script>
           </camunda:outputParameter>
-          <camunda:outputParameter name="status">
-            <camunda:script scriptFormat="js">next(null, {
-  "statuskey" : "stop",
-  "error": true,
-  "statuscode": 401,
-  "statusmessage": 'Not approved by manager (' + environment.output.managerEmailAddress + ')'
-});</camunda:script>
-          </camunda:outputParameter>
           <camunda:outputParameter name="state">
             <camunda:script scriptFormat="js">next(null, {
     id: 'approved', 
@@ -163,9 +148,6 @@ next();</camunda:script>
       <bpmn:incoming>Flow_0nms745</bpmn:incoming>
       <bpmn:outgoing>Flow_03hmvxu</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_03hmvxu" sourceRef="emailNotApproved" targetRef="Event_0dvt885" />
-    <bpmn:sequenceFlow id="flowStart" sourceRef="StartEvent_1" targetRef="setMailAddresses" />
-    <bpmn:sequenceFlow id="flowTimeout" sourceRef="timeoutEvent" targetRef="emailTimeout" />
     <bpmn:userTask id="approval" name="Manager approval">
       <bpmn:incoming>Flow_1fx5hzv</bpmn:incoming>
       <bpmn:outgoing>Flow_0g8o9ul</bpmn:outgoing>
@@ -191,14 +173,6 @@ next();</camunda:script>
             <camunda:script scriptFormat="js">environment.output.output.resultHTML = `This request has timed out!`;
 next();</camunda:script>
           </camunda:outputParameter>
-          <camunda:outputParameter name="status">
-            <camunda:script scriptFormat="js">next(null, {
-  "statuskey" : "stop",
-  "error": true,
-  "statuscode": 408,
-  "statusmessage": 'Manager (' + environment.output.managerEmailAddress + ') not approved in time'
-});</camunda:script>
-          </camunda:outputParameter>
           <camunda:outputParameter name="state">
             <camunda:script scriptFormat="js">next(null, {
     id: 'approved', 
@@ -216,21 +190,6 @@ next();</camunda:script>
       <bpmn:incoming>flowTimeout</bpmn:incoming>
       <bpmn:outgoing>Flow_15abn9c</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_15abn9c" sourceRef="emailTimeout" targetRef="Event_0hfa644" />
-    <bpmn:boundaryEvent id="timeoutEvent" name="Time out after 10 minutes" attachedToRef="approval">
-      <bpmn:outgoing>flowTimeout</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_1f99wl0">
-        <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${environment.output.timeOut}</bpmn:timeDate>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="flowReminder" sourceRef="reminderEvent" targetRef="sendMailToManager" />
-    <bpmn:boundaryEvent id="reminderEvent" name="Reminder after 5 minutes" attachedToRef="approval">
-      <bpmn:outgoing>flowReminder</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0mxgmrc">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_0hakt3x" sourceRef="setTimoutAndOutput" targetRef="sendMailToManager" />
     <bpmn:scriptTask id="setTimoutAndOutput" name="Set timeout and output" scriptFormat="javascript" camunda:resultVariable="timeOut">
       <bpmn:incoming>Flow_1tbw8i0</bpmn:incoming>
       <bpmn:outgoing>Flow_0hakt3x</bpmn:outgoing>
@@ -240,13 +199,21 @@ environment.output.output = environment.variables.submit;
 
 next(null, timeOut);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:endEvent id="Event_0dvt885" name="Not approved">
+    <bpmn:endEvent id="EndEventNotApproved" name="Not approved">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="status">
+            <camunda:map>
+              <camunda:entry key="statuskey">stop</camunda:entry>
+              <camunda:entry key="error">true</camunda:entry>
+              <camunda:entry key="statuscode">401</camunda:entry>
+              <camunda:entry key="statusmessage">Not approved by manager</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_03hmvxu</bpmn:incoming>
       <bpmn:terminateEventDefinition id="TerminateEventDefinition_0ym3dw7" />
-    </bpmn:endEvent>
-    <bpmn:endEvent id="Event_0hfa644" name="Time out">
-      <bpmn:incoming>Flow_15abn9c</bpmn:incoming>
-      <bpmn:terminateEventDefinition id="TerminateEventDefinition_17cp705" />
     </bpmn:endEvent>
     <bpmn:startEvent id="StartEvent_1" name="Request by user">
       <bpmn:outgoing>flowStart</bpmn:outgoing>
@@ -278,8 +245,6 @@ next(null, timeOut);</bpmn:script>
       <bpmn:incoming>Flow_1rsq0rn</bpmn:incoming>
       <bpmn:outgoing>Flow_1tbw8i0</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1tbw8i0" sourceRef="addProcessStates" targetRef="setTimoutAndOutput" />
-    <bpmn:sequenceFlow id="Flow_0jph97j" sourceRef="doSomeMagic" targetRef="Event_1q0o42f" />
     <bpmn:task id="setMailAddresses" name="Set email addresses">
       <bpmn:extensionElements>
         <camunda:inputOutput>
@@ -290,14 +255,12 @@ next(null, timeOut);</bpmn:script>
       <bpmn:incoming>flowStart</bpmn:incoming>
       <bpmn:outgoing>Flow_1rsq0rn</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1rsq0rn" sourceRef="setMailAddresses" targetRef="addProcessStates" />
     <bpmn:scriptTask id="doSomeMagic" name="Magic 1" scriptFormat="js">
       <bpmn:incoming>Flow_1ybc2i8</bpmn:incoming>
       <bpmn:outgoing>Flow_0jph97j</bpmn:outgoing>
       <bpmn:script>environment.output.output.resultHTML = `Magic 1&lt;br&gt;`;
 next();</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_0kx401p" sourceRef="Event_1q0o42f" targetRef="Activity_1a9a92r" />
     <bpmn:intermediateCatchEvent id="Event_1q0o42f" name="Wait 3 seconds">
       <bpmn:incoming>Flow_0jph97j</bpmn:incoming>
       <bpmn:outgoing>Flow_0kx401p</bpmn:outgoing>
@@ -327,27 +290,72 @@ next();</bpmn:script>
       <bpmn:script>environment.output.output.resultHTML += `&lt;b&gt;Magic 2&lt;/b&gt;&lt;br&gt;`;
 next();</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_1c8fgoj" sourceRef="Activity_1a9a92r" targetRef="Event_183t8f1" />
+    <bpmn:endEvent id="EndEventTimeout" name="Time out">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="status">
+            <camunda:map>
+              <camunda:entry key="statuskey">stop</camunda:entry>
+              <camunda:entry key="error">true</camunda:entry>
+              <camunda:entry key="statusmessage">Manager dit not approve in time</camunda:entry>
+              <camunda:entry key="statuscode">408</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_15abn9c</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1tbllnh" />
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="reminderEvent" name="Reminder after 5 minutes" attachedToRef="approval">
+      <bpmn:outgoing>flowReminder</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0mxgmrc">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="timeoutEvent" name="Time out after 10 minutes" attachedToRef="approval">
+      <bpmn:outgoing>flowTimeout</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1f99wl0">
+        <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${environment.output.timeOut}</bpmn:timeDate>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1c8fgoj" sourceRef="Activity_1a9a92r" targetRef="EndEventSuccess" />
+    <bpmn:sequenceFlow id="Flow_0kx401p" sourceRef="Event_1q0o42f" targetRef="Activity_1a9a92r" />
+    <bpmn:sequenceFlow id="Flow_1rsq0rn" sourceRef="setMailAddresses" targetRef="addProcessStates" />
+    <bpmn:sequenceFlow id="Flow_0jph97j" sourceRef="doSomeMagic" targetRef="Event_1q0o42f" />
+    <bpmn:sequenceFlow id="Flow_1tbw8i0" sourceRef="addProcessStates" targetRef="setTimoutAndOutput" />
+    <bpmn:sequenceFlow id="Flow_0hakt3x" sourceRef="setTimoutAndOutput" targetRef="sendMailToManager" />
+    <bpmn:sequenceFlow id="flowReminder" sourceRef="reminderEvent" targetRef="sendMailToManager" />
+    <bpmn:sequenceFlow id="Flow_15abn9c" sourceRef="emailTimeout" targetRef="EndEventTimeout" />
+    <bpmn:sequenceFlow id="flowTimeout" sourceRef="timeoutEvent" targetRef="emailTimeout" />
+    <bpmn:sequenceFlow id="flowStart" sourceRef="StartEvent_1" targetRef="setMailAddresses" />
+    <bpmn:sequenceFlow id="Flow_03hmvxu" sourceRef="emailNotApproved" targetRef="EndEventNotApproved" />
+    <bpmn:sequenceFlow id="Flow_1ybc2i8" sourceRef="emailApproved" targetRef="doSomeMagic" />
+    <bpmn:sequenceFlow id="Flow_1fx5hzv" sourceRef="sendMailToManager" targetRef="approval" />
+    <bpmn:sequenceFlow id="Flow_0nms745" name="No" sourceRef="approveGateway" targetRef="emailNotApproved" />
+    <bpmn:sequenceFlow id="Flow_1bjh9j0" name="Yes" sourceRef="approveGateway" targetRef="emailApproved">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">next(null, (environment.output._approval.form.queryparam.action == "approve"));</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0g8o9ul" sourceRef="approval" targetRef="approveGateway" />
     <bpmn:textAnnotation id="TextAnnotation_1v49n5n">
       <bpmn:text>Now + 10 minutes</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_19qhz1v" sourceRef="setTimoutAndOutput" targetRef="TextAnnotation_1v49n5n" />
     <bpmn:textAnnotation id="TextAnnotation_197sagj">
       <bpmn:text>Please change email address (in output)</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_0krsqzq" sourceRef="setMailAddresses" targetRef="TextAnnotation_197sagj" />
     <bpmn:textAnnotation id="TextAnnotation_1d9hgak">
       <bpmn:text>Adding workflow states</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_0qd3gu9" sourceRef="addProcessStates" targetRef="TextAnnotation_1d9hgak" />
     <bpmn:textAnnotation id="TextAnnotation_0aksq67">
       <bpmn:text>Add text to process output</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_10kr31d" sourceRef="doSomeMagic" targetRef="TextAnnotation_0aksq67" />
     <bpmn:textAnnotation id="TextAnnotation_1ujfxmr">
       <bpmn:text>Add more text to process output</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_0v51i0q" sourceRef="Activity_1a9a92r" targetRef="TextAnnotation_1ujfxmr" />
+    <bpmn:association id="Association_10kr31d" sourceRef="doSomeMagic" targetRef="TextAnnotation_0aksq67" />
+    <bpmn:association id="Association_0qd3gu9" sourceRef="addProcessStates" targetRef="TextAnnotation_1d9hgak" />
+    <bpmn:association id="Association_0krsqzq" sourceRef="setMailAddresses" targetRef="TextAnnotation_197sagj" />
+    <bpmn:association id="Association_19qhz1v" sourceRef="setTimoutAndOutput" targetRef="TextAnnotation_1v49n5n" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="approval-example">
@@ -431,10 +439,10 @@ next();</bpmn:script>
           <dc:Bounds x="1061" y="159" width="53" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_183t8f1_di" bpmnElement="Event_183t8f1" bioc:stroke="rgb(67, 160, 71)" bioc:fill="rgb(200, 230, 201)">
+      <bpmndi:BPMNShape id="Event_183t8f1_di" bpmnElement="EndEventSuccess" bioc:stroke="rgb(67, 160, 71)" bioc:fill="rgb(200, 230, 201)">
         <dc:Bounds x="1762" y="189" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1767" y="232" width="27" height="14" />
+          <dc:Bounds x="1759" y="232" width="43" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1nd79el_di" bpmnElement="sendMailToManager">
@@ -455,16 +463,10 @@ next();</bpmn:script>
       <bpmndi:BPMNShape id="Activity_1iefgzw_di" bpmnElement="setTimoutAndOutput">
         <dc:Bounds x="588" y="167" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_00xr2j8_di" bpmnElement="Event_0dvt885" bioc:stroke="rgb(251, 140, 0)" bioc:fill="rgb(255, 224, 178)">
+      <bpmndi:BPMNShape id="Event_00xr2j8_di" bpmnElement="EndEventNotApproved" bioc:stroke="rgb(251, 140, 0)" bioc:fill="rgb(255, 224, 178)">
         <dc:Bounds x="1358" y="302" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1343" y="345" width="67" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0mdmmnt_di" bpmnElement="Event_0hfa644" bioc:stroke="rgb(229, 57, 53)" bioc:fill="rgb(255, 205, 210)">
-        <dc:Bounds x="1358" y="412" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1356" y="455" width="43" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -505,6 +507,12 @@ next();</bpmn:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_1ujfxmr_di" bpmnElement="TextAnnotation_1ujfxmr">
         <dc:Bounds x="1690" y="80" width="130" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vzzcfz_di" bpmnElement="EndEventTimeout" bioc:stroke="rgb(229, 57, 53)" bioc:fill="rgb(255, 205, 210)">
+        <dc:Bounds x="1358" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1356" y="455" width="43" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0sf4oy2_di" bpmnElement="reminderEvent">
         <dc:Bounds x="892" y="229" width="36" height="36" />
