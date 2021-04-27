@@ -1,6 +1,10 @@
-# Onify Blueprint: Approval example
+![Onify Blueprints](https://files.readme.io/8ba3f14-onify-blueprints-logo.png)
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+
+# Onify Blueprint: Approval example
+
+Approvals are something that any organization are in need of. If you need approvals for a new iPhone or a new application. Maybe you need to order access and the system owner needs to approve it. In this example we show how a user makes a simple request and then someone needs to approve it. With the power of Onify you can of course automatically set the approver based on user that made the request. We also show how the user and manager can follow the request via a simple process view. This gives the user full visibility of the process at all times. No more chase calls! Hope you like it!
 
 ## Screenshots
 
